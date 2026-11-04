@@ -43,6 +43,8 @@ const connectedClient = await connecToMongodb();
 const db = connectedClient.db('StudioSpace');
 const roomsCollection = db.collection('rooms');
 
+const bookingCollection = db.collection('my-bookings');
+
 
 //get the rooms
 app.get('/rooms',async(req,res)=>{
@@ -50,4 +52,27 @@ app.get('/rooms',async(req,res)=>{
     
     res.send(results);
 })
+//all rooms
+app.get('/all-rooms',async(req,res)=>{
+    const results = await roomsCollection.find().toArray();
+    
+    res.send(results);
+})
 
+
+//detailed rooms
+
+app.get('/all-rooms/:id', async(req,res)=>{
+    const {id} = req.params;
+    const results = await roomsCollection.findOne({_id : new ObjectId(id)});
+    res.send(results);
+})
+
+//post booking data
+app.post('/booking', async(req,res)=>{
+    const data = req.body;
+    delete data._id;
+    const result = await bookingCollection.insertOne(data);
+    res.send(result);
+
+})
