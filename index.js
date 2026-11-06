@@ -47,6 +47,46 @@ const bookingCollection = db.collection('my-bookings');
 const myListingsCollection = db.collection('my-listings');
 
 
+
+
+
+const varifyToken = async(req,res,next)=>{
+    const authHeader = req.headers.authorization;
+    // console.log(authHeader);
+    if  (!authHeader) {
+        return res.status(401).send({msg : 'unauthorized'});
+    }
+    const token = authHeader.split(" ")[1];
+    // console.log(Array.isArray(token), "token");
+    // console.log(token, "token");
+
+    if (!token) {
+        return res.status(401).send({msg: 'umauthorized'});
+    }
+
+
+    const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`))
+    
+    // console.log(payload, "payload");
+    
+    try {
+        const {payload} = await jwtVerify(token, JWKS)
+        next()
+        
+    } catch (error) {
+    return res.status(500).send({msg: 'not varified'});
+        
+    }
+     
+
+
+
+
+}
+
+
+
+
 //get the rooms
 app.get('/rooms',async(req,res)=>{
     const results = await roomsCollection.find().sort({rating : -1}).limit(6).toArray();
@@ -70,7 +110,7 @@ app.get('/all-rooms/:id', async(req,res)=>{
 })
 
 //post booking data
-app.post("/booking", async (req, res) => {
+app.post("/booking",varifyToken, async (req, res) => {
   const data = req.body;
 
   delete data._id;
@@ -103,14 +143,14 @@ app.post("/booking", async (req, res) => {
 
 //get my bookings
 
-app.get('/my-bookings',async(req,res)=>{
+app.get('/my-bookings',varifyToken,async(req,res)=>{
     const results = await bookingCollection.find().toArray();
     res.send(results);
 });
 
 
 //delete booking
-app.delete('/my-bookings/:id',async(req,res)=>{
+app.delete('/my-bookings/:id',varifyToken,async(req,res)=>{
     const {id} = req.params;
     const result = await bookingCollection.deleteOne({_id : new ObjectId(id)});
     res.send(result);
@@ -127,8 +167,8 @@ app.post('/add-listings', async(req,res)=>{
 
 });
 
-//all rooms
-app.get('/my-listings/:email',async(req,res)=>{
+//all listings
+app.get('/my-listings/:email',varifyToken,async(req,res)=>{
     const {email} = req.params;
     console.log(req.params);
     const result = await myListingsCollection.find({userEmail : email}).toArray();
@@ -138,7 +178,7 @@ app.get('/my-listings/:email',async(req,res)=>{
 });
 
 //my booking card delete
-app.delete('/my-listings/:id', async(req,res)=>{
+app.delete('/my-listings/:id',varifyToken, async(req,res)=>{
     const {id} = req.params;
     const result = await myListingsCollection.deleteOne({_id : new ObjectId(id)});
     res.send(result);
@@ -146,7 +186,7 @@ app.delete('/my-listings/:id', async(req,res)=>{
 });
 
 
-app.patch('/my-listings/:id',async(req,res)=>{
+app.patch('/my-listings/:id',varifyToken,async(req,res)=>{
     const {id} = req.params;
    const updatedData = { ...req.body };
     delete updatedData._id;
@@ -161,8 +201,16 @@ app.patch('/my-listings/:id',async(req,res)=>{
 
 //get my listings
 
-app.get('/my-listings/:id',async(req,res)=>{
+app.get('/my-listings/:id',varifyToken,async(req,res)=>{
      const {id} = req.params;
     const result = await myListingsCollection.findOne({_id : new ObjectId(id)});
+    res.send(result);
+})
+
+
+//my-listing for all
+app.get('/my-listings',async(req,res)=>{
+     
+    const result = await myListingsCollection.find().toArray();
     res.send(result);
 })
