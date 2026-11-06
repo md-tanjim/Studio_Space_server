@@ -213,4 +213,7 @@ app.get('/my-listings',async(req,res)=>{
      
     const result = await myListingsCollection.find().toArray();
     res.send(result);
-})
+});
+
+
+export default app
