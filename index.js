@@ -162,19 +162,18 @@ app.delete('/my-bookings/:id',varifyToken,async(req,res)=>{
     res.send(result);
 })
 
+
 //add-listing
-app.post('/add-listings', async(req,res)=>{
+app.post('/add-listings',varifyToken, async(req,res)=>{
     const data = req.body;
     const result = await myListingsCollection.insertOne(data);
 
     console.log(result);
     res.send(result);
 
-
 });
 
 //get my listings
-
 app.get('/my-listings/:id',async(req,res)=>{
      const {id} = req.params;
      console.log(id, "executed========")
@@ -186,7 +185,7 @@ app.get('/my-listings/:id',async(req,res)=>{
 
 //all listings
 //varufy korte hobe
-app.get('/my-listings/:email',varifyToken,async(req,res)=>{
+app.get('/my-listings/user/:email',varifyToken,async(req,res)=>{
     const {email} = req.params;
     console.log(req.params,"this is params");
 
@@ -198,7 +197,7 @@ app.get('/my-listings/:email',varifyToken,async(req,res)=>{
 });
 
 //my booking card delete
-app.delete('/my-listings/:id',varifyToken, async(req,res)=>{
+app.delete('/my-listings/delete/:id',varifyToken, async(req,res)=>{
     const {id} = req.params;
     const result = await myListingsCollection.deleteOne({_id : new ObjectId(id)});
     res.send(result);
@@ -206,7 +205,7 @@ app.delete('/my-listings/:id',varifyToken, async(req,res)=>{
 });
 
 
-app.patch('/my-listings/:id',varifyToken,async(req,res)=>{
+app.patch('/my-listings/update/:id',varifyToken,async(req,res)=>{
     const {id} = req.params;
    const updatedData = { ...req.body };
     delete updatedData._id;
