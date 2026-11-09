@@ -175,7 +175,7 @@ app.post('/add-listings', async(req,res)=>{
 
 //all listings
 //varufy korte hobe
-app.get('/my-listings/:email',async(req,res)=>{
+app.get('/my-listings/:email',varifyToken,async(req,res)=>{
     const {email} = req.params;
     console.log(req.params,"this is params");
 
@@ -226,7 +226,7 @@ app.get('/my-listings',async(req,res)=>{
 
 
 //detailed my-listings data
-app.get('/my-listings/:email/:id',async(req,res)=>{
+app.get('/my-listings/:email/:id',varifyToken,async(req,res)=>{
     const {id, email} = req.params;
     const result = await myListingsCollection.findOne({
         _id : new ObjectId(id),
