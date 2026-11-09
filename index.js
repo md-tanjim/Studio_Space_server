@@ -173,6 +173,17 @@ app.post('/add-listings', async(req,res)=>{
 
 });
 
+//get my listings
+
+app.get('/my-listings/:id',async(req,res)=>{
+     const {id} = req.params;
+     console.log(id, "executed========")
+
+    const result = await myListingsCollection.findOne({_id : new ObjectId(id)});
+    console.log("executed========")
+    res.send(result);
+});
+
 //all listings
 //varufy korte hobe
 app.get('/my-listings/:email',varifyToken,async(req,res)=>{
@@ -208,13 +219,7 @@ app.patch('/my-listings/:id',varifyToken,async(req,res)=>{
 });
 
 
-//get my listings
 
-app.get('/my-listings/:id',varifyToken,async(req,res)=>{
-     const {id} = req.params;
-    const result = await myListingsCollection.findOne({_id : new ObjectId(id)});
-    res.send(result);
-})
 
 
 //my-listing for all
@@ -226,14 +231,14 @@ app.get('/my-listings',async(req,res)=>{
 
 
 //detailed my-listings data
-app.get('/my-listings/:email/:id',async(req,res)=>{
-    const {id, email} = req.params;
-    const result = await myListingsCollection.findOne({
-        _id : new ObjectId(id),
-        "host.userEmail": email,
-    });
-    res.send(result);
-})
+// app.get('/my-listings/:email/:id',async(req,res)=>{
+//     const {id, email} = req.params;
+//     const result = await myListingsCollection.findOne({
+//         _id : new ObjectId(id),
+//         "host.userEmail": email,
+//     });
+//     res.send(result);
+// })
 
 
 
