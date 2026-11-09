@@ -226,11 +226,11 @@ app.get('/my-listings',async(req,res)=>{
 
 
 //detailed my-listings data
-app.get('/my-listings/:email/:id',varifyToken,async(req,res)=>{
+app.get('/my-listings/:email/:id',async(req,res)=>{
     const {id, email} = req.params;
     const result = await myListingsCollection.findOne({
         _id : new ObjectId(id),
-        "host.userEmail": email 
+        "host.userEmail": email,
     });
     res.send(result);
 })
