@@ -107,7 +107,13 @@ app.get('/all-rooms/:id', async(req,res)=>{
     const {id} = req.params;
     const results = await roomsCollection.findOne({_id : new ObjectId(id)});
     res.send(results);
-})
+});
+
+
+
+
+
+
 
 //post booking data
 app.post("/booking",varifyToken, async (req, res) => {
@@ -168,11 +174,14 @@ app.post('/add-listings', async(req,res)=>{
 });
 
 //all listings
-app.get('/my-listings/:email',varifyToken,async(req,res)=>{
+//varufy korte hobe
+app.get('/my-listings/:email',async(req,res)=>{
     const {email} = req.params;
-    console.log(req.params);
-    const result = await myListingsCollection.find({userEmail : email}).toArray();
-    console.log(req.params);
+    console.log(req.params,"this is params");
+
+
+    const result = await myListingsCollection.find({ "host.userEmail": email }).toArray();
+
     res.send(result);
 
 });
@@ -214,6 +223,19 @@ app.get('/my-listings',async(req,res)=>{
     const result = await myListingsCollection.find().toArray();
     res.send(result);
 });
+
+
+//detailed my-listings data
+app.get('/my-listings/:email/:id',async(req,res)=>{
+    const {id, email} = req.params;
+    const result = await myListingsCollection.findOne({
+        _id : new ObjectId(id),
+        "host.userEmail": email 
+    });
+    res.send(result);
+})
+
+
 
 
 export default app
